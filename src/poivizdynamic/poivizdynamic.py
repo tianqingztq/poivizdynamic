@@ -244,7 +244,7 @@ def get_footprint_map(
     zoom=2.5,
 ):
     """
-    This function returns a dynaic footprint plotly map plot saved as "html" file in the "demo_output" directory.
+    This function returns a dynamic footprint plotly map plot saved as "html" file in the "demo_output" directory.
 
     Parameters
     ---
@@ -342,7 +342,6 @@ def get_footprint_map(
     # return fig
 
 
-# bubble plot
 def get_animated_bubble_map(
     df,
     title_text="My animated bubble map with value/ colored with spot or group",
@@ -355,30 +354,37 @@ def get_animated_bubble_map(
     fig_name="my_animated_bubble_plot",
 ) -> None:
     """
-    This function returns a dynaic footprint plotly map plot saved as "html" file in the "demo_output" directory.
+    This function returns a dynamic bubble plotly map plot saved as "html" file in the "demo_output" directory. The bubble size and color could be controlled.
+    More customized parameters are still under exploration due to the time limitation...
 
     Parameters
     ---
-    TOKEN_MAPBOX: an access token is required by Mapbox in order to get the dynamic plot look nicer.
-        Free access for the token: https://docs.mapbox.com/help/getting-started/access-tokens/.
-    df_in:  pd.DataFrame
+    df: pd.DataFrame
         The dataframe contains the information would be animated and mapped.
-    fig_name: str, default "my_animate_map"
-        Customize name of saving html file.
     title_text: str, default "My animated map"
         Customize name of the map title.
     title_size: int, default 20
         Customize the font size of the map title.
+    color_group_lab: str, default "spot_name"
+        This control the color group, which means the color will be group by color_group_lab.
+    color_value_discrete: bool, default True
+        True: the color value is continuous, so the color bar will be set in a continous form.
+        False: the color value is discrete, so the color will be categorical set.
+    bubble_size: str -> name of column, or int -> constant bubble_size; default "interest_value"
+        Can be the name of column with dynamic values, and the bubble size will change along with the change of the dynamic values given.
+        If the bubble_size input is an instant, the bubble size will remain the same during the whole time-series process shown on the plot.
     zoom: float/ int, default 2.5
         Customize the zoom level of the map plot. 2.5 for country level, 10~20 for city/ street level.
+    fig_name: str, default "my_animate_map"
+        Customize name of saving html file.
 
     Returns
     ---
-    Output plotly dynamic map plot of the POIs' geometric information change with the date information. Trace line of the activity is shown.
+    Output plotly dynamic bubble map plot of the POIs' geometric information change with the date information.
 
     Example
     ---
-    get_footprint_map(TOKEN_MAPBOX, travel, fig_name = "my foot print", title_text = "My Animated Footprint Map")
+    get_animated_bubble_map(TOKEN_MAPBOX, starb2, zoom = 10, color_value_discrete = False, bubble_size = "interest_value", color_group_lab = "interest_value", fig_name = "starbuck2")
 
     """
     df = df.dropna(subset=["longitude", "latitude"], axis=0)
