@@ -14,15 +14,48 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
-def get_coordinate_api(dataframe, maptype="world"):
+def get_coordinate_api(api_key, dataframe, maptype: str() = "world"):
+    """
+    This function returns a one-line pandans.DataFrame showing coordination information of a POI.
+
+    Parameters
+    ---
+    api_key: a private api key
+        if maptype = "US":
+            pass in the private api key GEO_CENSUS_API_KEY provided by the U.S. Census Bureau. https://www.census.gov/data/developers/data-sets/popest-popproj/popest.html
+        if maptype = "wold":
+            pass in the private api key GEO_RADAR_API_KEY provided by Radar (Radar is the leading geofencing and location tracking platform). Instruction on how to get the code at Authentication session: https://radar.com/documentation/api
+
+    dataframe : pandans.DataFrame
+        This is the input one-line dataframe, which used as the query text for the geo-APIs.
+        It should contain the address information for only one POI.
+
+    maptype : {"world", "US"}, default "world", optional
+        Geo-API to use. The "US" API returns more accurate result than "world" when specifically looking at places in the US.
+        Details provided in the links attached below the api_key description.
+
+    Returns
+    ---
+    Output one-line pandans.DataFrame showing coordination information of a POI with latitude, longitude, and formattedAddress.
+    latitude            float64
+    longitude           float64
+    formattedAddress     object
+
+    Example
+    ---
+    get_coordinate_api(api_key = GEO_CENSUS_API_KEY, dataframe, maptype = "US")
+    get_coordinate_api(api_key = GEO_RADAR_API_KEY, dataframe, maptype = "world")
+
+    """
+
     start = time.time()  # time in seconds
 
     addr = dataframe[["street", "city", "state", "country"]].values.tolist()[0]
 
     if maptype == "world":
 
-        GEO_RADAR_API_KEY = os.getenv("GEO_RADAR_API_KEY")
-        api_key = GEO_RADAR_API_KEY
+        # GEO_RADAR_API_KEY = os.getenv("GEO_RADAR_API_KEY")
+        # api_key = GEO_RADAR_API_KEY
         api_url = f"https://api.radar.io/v1/geocode/forward?query={addr}"
         try:
             r = requests.get(api_url, headers={"Authorization": api_key})
@@ -46,8 +79,8 @@ def get_coordinate_api(dataframe, maptype="world"):
                 print(f"Requested the api in {end - start:0.4f} seconds")
             # return out_df
     elif maptype == "US":
-        GEO_CENSUS_API_KEY = os.getenv("GEO_CENSUS_API_KEY")
-        api_key = GEO_CENSUS_API_KEY
+        # GEO_CENSUS_API_KEY = os.getenv("GEO_CENSUS_API_KEY")
+        # api_key = GEO_CENSUS_API_KEY
 
         street, city, state, _ = addr
 
@@ -88,16 +121,60 @@ def get_coordinate_api(dataframe, maptype="world"):
     return out_df
 
 
-def get_geo_dataset(df, maptype="world"):
-    # use api
-    # apply api only on unique address
+def get_geo_dataset(api_key, df, maptype="world"):
+    """
+    This function returns a whole dataset with geo-information, a pandans.DataFrame combined original information with matched geographical information.
+
+    Parameters
+    ---
+    api_key: a private api key (pass the api key to the inner function get_coordinate_api(); same help doc of that one).
+        if maptype = "US":
+            pass in the private api key GEO_CENSUS_API_KEY provided by the U.S. Census Bureau. https://www.census.gov/data/developers/data-sets/popest-popproj/popest.html
+        if maptype = "wold":
+            pass in the private api key GEO_RADAR_API_KEY provided by Radar (Radar is the leading geofencing and location tracking platform). Instruction on how to get the code at Authentication session: https://radar.com/documentation/api
+
+    dataframe : pandans.DataFrame
+        This is the input dataframe, which contains a list of POI's address information.
+
+    maptype : {"world", "US"}, default "world", optional
+        Geo-API to use. The "US" API returns more accurate result than "world" when specifically looking at places in the US.
+        Details provided in the links attached below the api_key description.
+
+    Returns
+    ---
+    Output the whole dataset with geo-information, a pandans.DataFrame combined original information with matched geographical information.
+    The column number should be 12.
+
+    unique_id             int64
+    spot_name            object
+    street               object
+    city                 object
+    state                object
+    country              object
+    interest_value        int64
+    date                 object
+    symbol               object
+    latitude            float64
+    longitude           float64
+    formattedAddress     object
+    dtype: object
+
+    Example
+    ---
+    get_coordinate_api(api_key = GEO_RADAR_API_KEY, travel, maptype = "world")
+    get_coordinate_api(api_key = GEO_CENSUS_API_KEY, starbuck, maptype = "US")
+
+    """
+
+    # apply api only on unique address in oreder to save time and even money.
+    # get non-duplication dataset
     temp_nodup = df.drop_duplicates(subset=["street", "city"])
 
     for i in range(len(temp_nodup)):
         temp = temp_nodup.iloc[i, :]
         temp = pd.DataFrame([temp.values], columns=temp.index)
 
-        temp2 = get_coordinate_api(temp, maptype=maptype)
+        temp2 = get_coordinate_api(api_key, temp, maptype=maptype)
         if i == 0:
             df_out = pd.concat([temp, temp2], axis=1)
         else:
@@ -123,6 +200,34 @@ def get_geo_dataset(df, maptype="world"):
 
 
 def clean_dataset(df):
+    """
+    This function gets ready the data type in the dataset for animated map ploting usage.
+    It ensures the "date" is date format; "longitude" and "latitude" are numeric format.
+
+    Parameters
+    ---
+    dataframe : pandans.DataFrame
+        This is the input dataframe.
+
+    Returns
+    ---
+    Output dataframe has dypes as follows:
+
+    unique_id                    int64
+    spot_name                   object
+    street                      object
+    city                        object
+    state                       object
+    country                     object
+    interest_value               int64
+    date                datetime64[ns]
+    symbol                      object
+    latitude                   float64
+    longitude                  float64
+    formattedAddress            object
+    dtype: object
+
+    """
     df["date"] = pd.to_datetime(df["date"])
     df["longitude"] = pd.to_numeric(df["longitude"])  # ,errors = 'coerce'
     df["latitude"] = pd.to_numeric(df["latitude"])
@@ -131,15 +236,42 @@ def clean_dataset(df):
 
 
 def get_footprint_map(
+    TOKEN_MAPBOX,
     df_in,
     fig_name="my_animate_map",
     title_text="My animated map",
     title_size=20,
     zoom=2.5,
 ):
-    # https://docs.mapbox.com/help/getting-started/access-tokens/
+    """
+    This function returns a dynaic footprint plotly map plot saved as "html" file in the "demo_output" directory.
 
-    TOKEN_MAPBOX = os.getenv("TOKEN_MAPBOX")
+    Parameters
+    ---
+    TOKEN_MAPBOX: an access token is required by Mapbox in order to get the dynamic plot look nicer.
+        Free access for the token: https://docs.mapbox.com/help/getting-started/access-tokens/.
+    df_in:  pd.DataFrame
+        The dataframe contains the information would be animated and mapped.
+    fig_name: str, default "my_animate_map"
+        Customize name of saving html file.
+    title_text: str, default "My animated map"
+        Customize name of the map title.
+    title_size: int, default 20
+        Customize the font size of the map title.
+    zoom: float/ int, default 2.5
+        Customize the zoom level of the map plot. 2.5 for country level, 10~20 for city/ street level.
+
+    Returns
+    ---
+    Output plotly dynamic map plot of the POIs' geometric information change with the date information. Trace line of the activity is shown.
+
+    Example
+    ---
+    get_footprint_map(TOKEN_MAPBOX, travel, fig_name = "my foot print", title_text = "My Animated Footprint Map")
+
+    """
+
+    # TOKEN_MAPBOX = os.getenv("TOKEN_MAPBOX")
 
     lon = [df_in["longitude"][0]]
     lat = [df_in["latitude"][0]]
@@ -222,7 +354,33 @@ def get_animated_bubble_map(
     zoom=2.5,
     fig_name="my_animated_bubble_plot",
 ) -> None:
+    """
+    This function returns a dynaic footprint plotly map plot saved as "html" file in the "demo_output" directory.
 
+    Parameters
+    ---
+    TOKEN_MAPBOX: an access token is required by Mapbox in order to get the dynamic plot look nicer.
+        Free access for the token: https://docs.mapbox.com/help/getting-started/access-tokens/.
+    df_in:  pd.DataFrame
+        The dataframe contains the information would be animated and mapped.
+    fig_name: str, default "my_animate_map"
+        Customize name of saving html file.
+    title_text: str, default "My animated map"
+        Customize name of the map title.
+    title_size: int, default 20
+        Customize the font size of the map title.
+    zoom: float/ int, default 2.5
+        Customize the zoom level of the map plot. 2.5 for country level, 10~20 for city/ street level.
+
+    Returns
+    ---
+    Output plotly dynamic map plot of the POIs' geometric information change with the date information. Trace line of the activity is shown.
+
+    Example
+    ---
+    get_footprint_map(TOKEN_MAPBOX, travel, fig_name = "my foot print", title_text = "My Animated Footprint Map")
+
+    """
     df = df.dropna(subset=["longitude", "latitude"], axis=0)
 
     lat_lab = "latitude"
@@ -301,7 +459,36 @@ def get_animated_bubble_map(
     # return fig
 
 
-def get_demo_data(df, demo_data="my travel map"):
+def get_demo_data(df, demo_data: str() = "my travel map"):
+    """
+    This function gets the three demo datasets.
+
+    Parameters
+    ---
+    dataframe : pandans.DataFrame
+        This is the input dataframe named "demo_fake_data".
+
+    demo_data: {"my travel map", "life log", "starbuck"}, default "my travel map".
+        my travel map: This is the fake dataset for a travel foot print log including 4 cities in NY: New York -> Seattle -> Los Angela -> Miami.
+        life log: This is the fake dataset contains the daily active routine of a Columbia nerd.
+        starbuck: This is the fake dataset contains the starbucks income changed by date around New Haven city and neighorhoods.
+
+    Returns
+    ---
+    Relative dataframes.
+
+    Example
+    ---
+    travel = pv.get_demo_data(df, "my travel map")
+    life = pv.get_demo_data(df, "life log")
+    starb = pv.get_demo_data(df, "starbuck")
+
+    >> travel.columns
+    Index(['unique_id', 'spot_name', 'street', 'city', 'state', 'country',
+       'interest_value', 'date', 'symbol'],
+      dtype='object')
+
+    """
     if demo_data == "my travel map":
         df = df.iloc[
             0:4,
