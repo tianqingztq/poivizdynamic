@@ -1,5 +1,5 @@
-from poivizdynamic import poivizdynamic as pv
-
+#from poivizdynamic import poivizdynamic as pv
+import poivizdynamic as pv
 
 import pandas as pd
 
