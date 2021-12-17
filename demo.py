@@ -1,10 +1,11 @@
 from poivizdynamic import poivizdynamic as pv
 
-import pandas as pd
-import os
-print(os.getcwd())
 
-df = pd.read_csv('./data/demo_fake_data.csv')
+import pandas as pd
+
+
+#.src/poivizdynamic/data/demo_fake_data.csv')
+df = pd.read_csv('src/poivizdynamic/data/demo_fake_data.csv')
 
 travel = pv.get_demo_data(df, "my travel map")
 

@@ -6,7 +6,6 @@ import geopandas as gpd
 import time
 from datetime import datetime, timedelta
 # from dateutil import rrule
-import numpy as np
 import warnings
 
 import plotly.graph_objects as go
@@ -85,8 +84,8 @@ def get_footprint_map(df_in, fig_name = 'my_animate_map', zoom = 2.5):
     lon = [df_in["longitude"][0]]
     lat = [df_in["latitude"][0]]
     
-    mid_lat = np.mean(df_in["latitude"])
-    mid_lon = np.mean(df_in["longitude"])
+    mid_lat = df_in["latitude"].mean()
+    mid_lon = df_in["longitude"].mean()
     lon_ls = df_in["longitude"].values.tolist()
     lat_ls = df_in["latitude"].values.tolist()
     
@@ -144,5 +143,6 @@ def get_footprint_map(df_in, fig_name = 'my_animate_map', zoom = 2.5):
 
 
     fig.show()
-    html_path = f'/output/{fig_name}.html'
+    html_path = f'demo_output/{fig_name}.html'
+    #html_path = f'{fig_name}.html'
     fig.write_html(html_path)

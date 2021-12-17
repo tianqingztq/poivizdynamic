@@ -1,13 +1,18 @@
 [tool.poetry]
 name = "poivizdynamic"
-version = "0.1.0"
-description = "manimate the poi map!"
+version = "0.1.1"
+description = "animate the poi map!"
 authors = ["TianqingZhou"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+pandas = "^1.3.5"
+plotly = "^5.4.0"
+requests = "^2.26.0"
+timer = "^0.2.2"
+datetime = "^4.3"
 
 [tool.poetry.dev-dependencies]
 
