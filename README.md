@@ -1,11 +1,19 @@
 # poivizdynamic
 
-manimate the poi map!
+Animate your point-of-interest map! Make the point-trace/ value-trend moving! 
+
+This package helps users more easily visualize dynamic points/ value change on the map, observing {value amount/ point position} changes dynamically as the time-bar moves forward. 
+
+Users firstly need to prepare the POI dataset following the fake_demo_data format which can be found in the poivizdynamic/data folder. Then they can customize their easy animated maps with functions provided here.
 
 ## Installation
 
 ```bash
 $ pip install poivizdynamic
+
+or
+
+$ pip install -i https://test.pypi.org/simple/ poivizdynamic
 ```
 
 ## Usage
