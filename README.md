@@ -10,9 +10,10 @@ Users firstly need to prepare the POI dataset following the fake_demo_data forma
 
 ```bash
 $ pip install poivizdynamic
-
+```
 or
 
+```bash
 $ pip install -i https://test.pypi.org/simple/ poivizdynamic
 ```
 
@@ -23,6 +24,15 @@ $ pip install -i https://test.pypi.org/simple/ poivizdynamic
 ## Contributing
 
 Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
+
+## Dependencies
+
+- python = "^3.9"
+- pandas = "^1.3.5"
+- plotly = "^5.4.0"
+- requests = "^2.26.0"
+- timer = "^0.2.2"
+- datetime = "^4.3"
 
 ## License
 
