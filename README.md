@@ -8,6 +8,8 @@ Users firstly need to prepare the POI dataset following the fake_demo_data forma
 
 ## Installation
 
+Please install and import the censusviz package using the following commands.
+
 ```bash
 $ pip install poivizdynamic
 ```
@@ -17,9 +19,27 @@ or
 $ pip install -i https://test.pypi.org/simple/ poivizdynamic
 ```
 
+After installing via pip, please import the package to use on your Python IDE.
+
+```bash
+from poivizdynamic import poivizdynamic as pv
+```
+
 ## Usage
 
-- TODO
+Access to the help document using the following lines.
+
+```bash
+?pv.get_coordinate_api
+?pv.get_geo_dataset
+?pv.clean_dataset
+
+?pv.get_footprint_map
+?pv.get_animated_bubble_map
+
+?pv.get_demo_data
+```
+
 
 ## Contributing
 
@@ -33,6 +53,10 @@ Interested in contributing? Check out the contributing guidelines. Please note t
 - requests = "^2.26.0"
 - timer = "^0.2.2"
 - datetime = "^4.3"
+
+## Documentation
+
+The unofficial documentation can be found under this relative path: .docs/_build/html/index.html
 
 ## License
 
