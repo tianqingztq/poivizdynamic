@@ -15,6 +15,9 @@ timer = "^0.2.2"
 datetime = "^4.3"
 
 [tool.poetry.dev-dependencies]
+myst-nb = "^0.13.1"
+sphinx-autoapi = "^1.8.4"
+sphinx-rtd-theme = "^1.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

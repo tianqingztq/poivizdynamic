@@ -349,10 +349,10 @@ def get_animated_bubble_map(
     color_group_lab="spot_name",
     color_value_discrete=True,
     bubble_size="interest_value",
-    radius: "int > 0" = 20,
+    radius=20,
     zoom=2.5,
     fig_name="my_animated_bubble_plot",
-) -> None:
+):
     """
     This function returns a dynamic bubble plotly map plot saved as "html" file in the "demo_output" directory. The bubble size and color could be controlled.
     More customized parameters are still under exploration due to the time limitation...
