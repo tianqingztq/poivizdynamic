@@ -76,7 +76,7 @@ def get_geo_dataset(df):
     return df_out
 
 
-def get_footprint_map(df_in, fig_name = 'my_animate_map', zoom = 2.5):
+def get_footprint_map(df_in, title = "My animated map", fig_name = 'my_animate_map', zoom = 2.5):
     # https://docs.mapbox.com/help/getting-started/access-tokens/
 
     TOKEN_MAPBOX = os.getenv('TOKEN_MAPBOX')
@@ -128,7 +128,8 @@ def get_footprint_map(df_in, fig_name = 'my_animate_map', zoom = 2.5):
                               args=[None])])],
             mapbox = {
             'accesstoken': TOKEN_MAPBOX,
-            'style': "light", 'zoom': zoom}
+            'style': "light", 'zoom': zoom},
+            title_text = title
         ),
         
         frames = frames
@@ -137,12 +138,17 @@ def get_footprint_map(df_in, fig_name = 'my_animate_map', zoom = 2.5):
 
     fig.update_layout(
                     mapbox_center = {"lat": mid_lat, "lon": mid_lon},
-                    margin={"r":0,"t":0,"l":0,"b":0}
+                    margin={"r":0,"t":40,"l":0,"b":0}
                       
                      )
 
 
     fig.show()
+    
+    # save the html dynamic file
+    if not os.path.exists('demo_output'):
+        os.makedirs('demo_output')
+
     html_path = f'demo_output/{fig_name}.html'
     #html_path = f'{fig_name}.html'
     fig.write_html(html_path)
