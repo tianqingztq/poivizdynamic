@@ -12,28 +12,100 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
-def get_coordinate_api(addr):
+def get_coordinate_api(dataframe, maptype = "world"):
     start = time.time()  # time in seconds
-    GEO_RADAR_API_KEY=os.getenv('GEO_RADAR_API_KEY')
-    api_key = GEO_RADAR_API_KEY
-    api_url = f'https://api.radar.io/v1/geocode/forward?query={addr}'
-    try:
-        r = requests.get(api_url, headers = {"Authorization": api_key})
-        # If the response was successful, no Exception will be raised
-        r.raise_for_status()
-    except requests.exceptions.RequestException as http_err:
-        print(f'Error occurred:{http_err}')
-    else:
-        #json_output = json.loads(r.content) 
-        print('Successful! Status Code:{}'.format(r.status_code))
-        out_df = pd.DataFrame(r.json()["addresses"])[["latitude","longitude","formattedAddress"]]
-        if out_df.empty == True:
-            warnings.warn("Sorry! This address cannot be searched through the api and returned an empty result")
-            return None
+    
+    addr = dataframe[["street","city",'state',"country"]].values.tolist()[0]
+        
+    if maptype == "world":
+        
+        #GEO_RADAR_API_KEY=os.getenv('GEO_RADAR_API_KEY')
+        api_key = GEO_RADAR_API_KEY
+        api_url = f'https://api.radar.io/v1/geocode/forward?query={addr}'
+        try:
+            r = requests.get(api_url, headers = {"Authorization": api_key})
+            # If the response was successful, no Exception will be raised
+            r.raise_for_status()
+        except requests.exceptions.RequestException as http_err:
+            print(f'Error occurred:{http_err}')
         else:
-            end = time.time()
-            print(f'Requested the api in {end - start:0.4f} seconds')
-            return out_df
+            #json_output = json.loads(r.content) 
+            print('Successful! Status Code:{}'.format(r.status_code))
+            out_df = pd.DataFrame(r.json()["addresses"])[["latitude","longitude","formattedAddress"]]
+            if out_df.empty == True:
+                warnings.warn("Sorry! This address cannot be searched through the api and returned an empty result")
+                return None
+            else:
+                end = time.time()
+                print(f'Requested the api in {end - start:0.4f} seconds')
+            #return out_df
+    elif maptype == "US":
+        GEO_CENSUS_API_KEY=os.getenv('GEO_CENSUS_API_KEY')
+        api_key = GEO_CENSUS_API_KEY
+        
+        street, city, state, _ = addr
+        
+        benchmark = 'Public_AR_Census2020'
+        vintage = 'Census2020_Census2020'
+        layers = '10'
+        api_url = f'https://geocoding.geo.census.gov/geocoder/geographies/address?street={street}&city={city}&state={state}&benchmark={benchmark}&vintage={vintage}&layers={layers}&format=json&key={api_key}'
+        try:
+            r = requests.get(api_url)
+            # If the response was successful, no Exception will be raised
+            r.raise_for_status()
+        except requests.exceptions.RequestException as http_err:
+            print(f'Error occurred:{http_err}')
+        else:
+            #json_output = json.loads(r.content) 
+            print('Successful! Status Code:{}'.format(r.status_code))
+            df = pd.DataFrame(r.json()["result"]["addressMatches"])
+            if df.empty == True:
+                warnings.warn("Sorry! This address cannot be searched through census_geocoding api and returned an empty result")
+                return None
+            else:
+                cord = df["coordinates"].values.tolist()
+                cord_split = pd.DataFrame(cord, columns = ['x','y'])
+                adds = df["addressComponents"].values.tolist()
+                #adds_split = pd.DataFrame(adds, columns = ['city', 'state', 'zip'])
+                #out_df = pd.concat([df, cord_split, adds_split],axis=1)
+                out_df = pd.concat([df, cord_split],axis=1)[["y","x","matchedAddress"]]
+                out_df.columns = ["latitude", "longitude", "formattedAddress"]
+                end = time.time()
+                print(f'Requested the api and transformed into dataframe in {end - start:0.4f} seconds')
+    
+    return out_df
+
+
+
+  
+def get_geo_dataset(df, maptype = "world"):
+    # use api
+    # apply api only on unique address
+    temp_nodup = df.drop_duplicates(subset=['street', 'city'])
+    
+    for i in range(len(temp_nodup)):
+        temp = temp_nodup.iloc[i,:]
+        temp = pd.DataFrame([temp.values],columns = temp.index)
+        
+        
+        temp2 = get_coordinate_api(temp,maptype = maptype)
+        if i == 0:
+            df_out = pd.concat([temp, temp2], axis=1)
+        else:
+            if temp2 is None:
+                continue
+            else:
+
+                mid = pd.concat([temp, temp2], axis=1)
+                df_out = df_out.append(mid, ignore_index=True) 
+                
+
+        i += 1
+        
+    # left join the list of outcome to the original dataset (with duplicates)
+    df_out_final = df.merge(df_out[['street','city','state',"latitude", "longitude", "formattedAddress"]], on=['street','city','state'], how = 'left')
+
+    return df_out_final
 
 
 def clean_dataset(df):
@@ -42,27 +114,7 @@ def clean_dataset(df):
     df['latitude'] = pd.to_numeric(df["latitude"])
     df = df.sort_values(by = 'date')
     return df
-    
-def get_geo_dataset(df):
-    # use api
-    # apply api only on unique address
-    temp_nodup = df.drop_duplicates(subset=['street', 'city'])
-    for i in range(len(temp_nodup)):
-        temp = temp_nodup.iloc[i,:]
-        temp = pd.DataFrame([temp.values],columns = temp.index)
-        adds_ls = temp[["street","city",'state',"country"]].values.tolist()
-        
-        temp2 = get_coordinate_api(adds_ls[0])
-        if i == 0:
-            df_out = pd.concat([temp, temp2], axis=1)
-        else:
-
-            mid = pd.concat([temp, temp2], axis=1)
-            df_out = df_out.append(mid, ignore_index=True) 
-
-        i += 1
-    return df_out
-
+  
 
 def get_footprint_map(df_in, fig_name = 'my_animate_map', title_text = "My animated map", title_size = 20, zoom = 2.5):
     # https://docs.mapbox.com/help/getting-started/access-tokens/
@@ -145,9 +197,11 @@ def get_footprint_map(df_in, fig_name = 'my_animate_map', title_text = "My anima
     return fig
 
 # bubble plot
+# bubble plot
 def get_animated_bubble_map(df, title_text = "My animated bubble map with value/ colored with spot or group", title_size = 20, color_group_lab = "spot_name", color_value_discrete = True, bubble_size = "interest_value", radius:'int > 0' = 20, zoom = 2.5, fig_name = "my_animated_bubble_plot")-> None:
 
-    
+    df = df.dropna(subset = ["longitude", "latitude"],axis=0)
+
     lat_lab = "latitude"
     lon_lab = "longitude"
    
@@ -157,15 +211,17 @@ def get_animated_bubble_map(df, title_text = "My animated bubble map with value/
 
     mid_lon = median(df[lon_lab])
     
-    if type(bubble_size) == "str":
+    if type(bubble_size) == str:
         
         df[bubble_size] = df[bubble_size].apply(lambda x: pd.to_numeric(x))
+        print("bubble_size will change along with the true value")
     else:
         const_num = bubble_size
         bubble_size = [const_num] * len(df)
+        print("bubble_size is a constant number")
 
     if color_value_discrete == True:
-        
+        print("the value is discrete")
         fig = px.scatter_mapbox(df, lat = lat_lab,
                                 lon = lon_lab,
                                 size = bubble_size,
@@ -177,6 +233,7 @@ def get_animated_bubble_map(df, title_text = "My animated bubble map with value/
                                 # labels = {value_lab:'income'} # only for continuous data
                                )
     else:
+        print("the value is continuous")
         fig = px.scatter_mapbox(df, lat = lat_lab,
                                 lon = lon_lab,
                                 size = bubble_size,
@@ -212,6 +269,7 @@ def get_animated_bubble_map(df, title_text = "My animated bubble map with value/
     fig.write_html(html_path)
     
     return fig
+
 
 
 
