@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
-def get_coordinate_api(api_key, dataframe, maptype: str() = "world"):
+def get_coordinate_api(api_key, dataframe, maptype="world"):
     """
     This function returns a one-line pandans.DataFrame showing coordination information of a POI.
 
@@ -106,7 +106,7 @@ def get_coordinate_api(api_key, dataframe, maptype: str() = "world"):
             else:
                 cord = df["coordinates"].values.tolist()
                 cord_split = pd.DataFrame(cord, columns=["x", "y"])
-                adds = df["addressComponents"].values.tolist()
+                # adds = df["addressComponents"].values.tolist()
                 # adds_split = pd.DataFrame(adds, columns = ['city', 'state', 'zip'])
                 # out_df = pd.concat([df, cord_split, adds_split],axis=1)
                 out_df = pd.concat([df, cord_split], axis=1)[
@@ -373,6 +373,8 @@ def get_animated_bubble_map(
     bubble_size: str -> name of column, or int -> constant bubble_size; default "interest_value"
         Can be the name of column with dynamic values, and the bubble size will change along with the change of the dynamic values given.
         If the bubble_size input is an instant, the bubble size will remain the same during the whole time-series process shown on the plot.
+    radius: int, default 20
+        Customize the radius of the bubble.
     zoom: float/ int, default 2.5
         Customize the zoom level of the map plot. 2.5 for country level, 10~20 for city/ street level.
     fig_name: str, default "my_animate_map"
@@ -465,7 +467,7 @@ def get_animated_bubble_map(
     # return fig
 
 
-def get_demo_data(df, demo_data: str() = "my travel map"):
+def get_demo_data(df, demo_data="my travel map"):
     """
     This function gets the three demo datasets.
 
