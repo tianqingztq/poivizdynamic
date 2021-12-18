@@ -1,6 +1,6 @@
 # poivizdynamic
 
-Animate your point-of-interest map! Make the point-trace/ value-trend moving! 
+**Animate your point-of-interest map! Make the point-trace/ value-trend moving!**
 
 This package helps users more easily visualize dynamic points/ value change on the map, observing {value amount/ point position} changes dynamically as the time-bar moves forward. 
 
