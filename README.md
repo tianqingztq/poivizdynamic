@@ -49,6 +49,65 @@ icon of POI:
 
 The sample csv file "fake_demo_data.csv" can be found in the poivizdynamic/data folder. 
 
+```bash
+df = pd.read_csv(<your own data here>)
+
+# demo_data
+df = pd.read_csv('.src/poivizdynamic/data/demo_fake_data.csv')
+```
+
+### Return a 
+
+```bash
+# demo_data
+travel = pv.get_demo_data(df, "my travel map")
+travel = pv.get_geo_dataset(api_key_w, travel)  # default maptype is world
+travel = pv.clean_dataset(travel)
+```
+
+
+
+```bash
+# footprint map
+pv.get_footprint_map(TOKEN_MAPBOX, travel, fig_name = "my foot print", title_text = "My Animated Footprint Map")
+```
+Get a screenshot of the dynamic result!
+
+![](demo_output/footprint_static.png)
+
+
+```bash
+# load and prepare the "life" demo data 
+life = pv.get_geo_dataset(api_key_w, life)
+life = pv.clean_dataset(life)
+
+# footprint map
+pv.get_footprint_map(TOKEN_MAPBOX, life, zoom = 14.5, title_text = "My Daily Life", fig_name = "life")
+```
+
+![](demo_output/life_static.png)
+
+
+```bash
+# load and prepare the "starbuck" demo data 
+starb2 = pv.get_geo_dataset(api_key_us, starb, maptype = "US")
+starb2 = pv.clean_dataset(starb2)
+
+# bubble map with color_group_lab = YOUR_INTEREST_VALUE
+pv.get_animated_bubble_map(TOKEN_MAPBOX, starb2, zoom = 10, color_value_discrete = False, bubble_size = "interest_value", color_group_lab = "interest_value", fig_name = "starbuck2")
+```
+![](demo_output/starbuck2_static.png)
+
+
+```bash
+# bubble map with color_group_lab = POI'S NAME
+pv.get_animated_bubble_map(TOKEN_MAPBOX, starb2, zoom = 10, color_value_discrete = False, bubble_size = "interest_value", color_group_lab = "spot_name", fig_name = "starbuck1")
+```
+![](demo_output/starbuck1_static.png)
+
+
+
+#### Detailed Help Document When Using the Functions
 
 Access to the help document using the following lines.
 
@@ -63,18 +122,11 @@ Access to the help document using the following lines.
 ?pv.get_demo_data
 ```
 
-![](demo_output/footprint_static.png)
-
-![](demo_output/life_static.png)
-
-
-
-![](demo_output/starbuck1_static.png)
 
 
 
 
-![](demo_output/starbuck2_static.png)
+
 
 
 
