@@ -124,7 +124,7 @@ The ```get_footprint_map``` function returns a dynamic footprint plotly map plot
 
 It can show the tracing line move from one spot (POI) to another spot (POI). (Trace line of the activity is shown.)
 
-This function basically based on the strong dash tool "Plotly": https://plotly.com/, which worth every body to get a deep research on this amazing pkg!
+This function basically based on the strong dash tool "Plotly": https://plotly.com/, which worth everybody to get a deep research on this amazing pkg!
 
 Parameters:
 
