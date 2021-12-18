@@ -58,6 +58,30 @@ df = pd.read_csv('.src/poivizdynamic/data/demo_fake_data.csv')
 
 ### Return a 
 
+The ```get_coordinate_api``` function returns a one-line pandans.DataFrame showing coordination information of a POI.
+
+Parameters (required):
+    - api_key: a private api key
+        if maptype = "US":
+            pass in the private api key GEO_CENSUS_API_KEY provided by the U.S. Census Bureau. https://www.census.gov/data/developers/data-sets/popest-popproj/popest.html
+        if maptype = "wold":
+            pass in the private api key GEO_RADAR_API_KEY provided by Radar (Radar is the leading geofencing and location tracking platform). Instruction on how to get the code at Authentication session: https://radar.com/documentation/api
+
+    - dataframe : pandans.DataFrame
+        This is the input one-line dataframe, which used as the query text for the geo-APIs.
+        It should contain the address information for only one POI.
+Parameters (optional):
+    - maptype : {"world", "US"}, default "world", optional
+        Geo-API to use. The "US" API returns more accurate result than "world" when specifically looking at places in the US.
+        Details provided in the links attached below the api_key description.
+
+```bash
+get_coordinate_api(api_key = GEO_CENSUS_API_KEY, dataframe, maptype = "US")
+get_coordinate_api(api_key = GEO_RADAR_API_KEY, dataframe, maptype = "world")
+```
+
+Example with demo data:
+```get_demo_data``` function gets the three demo datasets.
 ```bash
 # demo_data
 travel = pv.get_demo_data(df, "my travel map")
