@@ -107,7 +107,8 @@ pv.get_animated_bubble_map(TOKEN_MAPBOX, starb2, zoom = 10, color_value_discrete
 
 
 
-***Detailed Help Document When Using the Functions: Access to the help document using the following lines.***
+*Detailed Help Document When Using the Functions:*
+*Access to the help document using the following lines.*
 
 ```bash
 ?pv.get_coordinate_api
