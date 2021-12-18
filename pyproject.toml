@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "poivizdynamic"
-version = "0.1.5"
+version = "0.1.7"
 description = "animate the poi map!"
 authors = ["TianqingZhou"]
 license = "MIT"

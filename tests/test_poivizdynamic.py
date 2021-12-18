@@ -8,7 +8,7 @@ travel = pv.get_demo_data(df, "my travel map")
 
 
 def test_version():
-    assert __version__ == "0.1.5"
+    assert __version__ == "0.1.7"
 
 
 def test_get_geo_dataset_preprocess(df=travel):
