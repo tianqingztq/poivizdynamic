@@ -27,6 +27,29 @@ from poivizdynamic import poivizdynamic as pv
 
 ## Usage
 
+### Prepare Correct Format of Data in Interests
+
+The input csv data should contains the following information (columns):
+basic info:
+- unique_id: the unique id of the POIs
+- spot_name: the name of the POIs	(i.e. Popeyes)
+address info:
+- street: correct street information of the POIs (i.e. 321 W 125th St)
+- city: the city info of the POIs	(i.e.  New York/ NY)
+- state: the state info of the POIs   (i.e.  New York/ NY)
+- country: the country info of the POIs	
+value of interests:
+- interest_value: if interest in point move, just leave this blank or 0; 
+        if interested in value change, fill it here!
+time series info:
+- date
+icon of POI:
+- symbol: choose your icon for your POIs (i.e. airport, rail, car, airport, library, lodging, fast-food)
+        more icons' name info can be found here: https://labs.mapbox.com/maki-icons/
+
+The sample csv file "fake_demo_data.csv" can be found in the poivizdynamic/data folder. 
+
+
 Access to the help document using the following lines.
 
 ```bash
