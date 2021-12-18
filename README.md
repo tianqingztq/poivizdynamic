@@ -40,6 +40,20 @@ Access to the help document using the following lines.
 ?pv.get_demo_data
 ```
 
+![](demo_output/footprint_static.png)
+
+![](demo_output/life_static.png)
+
+
+
+![](demo_output/starbuck1_static.png)
+
+
+
+
+![](demo_output/starbuck2_static.png)
+
+
 
 ## Contributing
 
